@@ -2,18 +2,30 @@ package main
 
 import (
 	"fmt"
-	"log"
 
 	libvirt "github.com/libvirt/libvirt-go"
 )
 
 func main() {
-	fmt.Println("Hello")
-	var drive uint
-	drive = 0
+	fmt.Println("connect")
 	conn, err := libvirt.NewConnect("qemu:///system")
 	if err != nil {
-		log.Fatalf("failed to connect to qemu")
+		panic(err)
 	}
-	defer conn.Close()
+
+	doms, err := conn.ListAllDomains(libvirt.CONNECT_LIST_DOMAINS_ACTIVE | libvirt.CONNECT_LIST_DOMAINS_INACTIVE)
+	if err != nil {
+		panic(err)
+	}
+
+	for _, dom := range doms {
+		name, _ := dom.GetName()
+		fmt.Println(name)
+		xml, _ := dom.GetXMLDesc(libvirt.DOMAIN_XML_SECURE)
+		fmt.Println(xml)
+	}
+
+	fmt.Println("close")
+	conn.Close()
+
 }
