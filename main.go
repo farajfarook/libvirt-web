@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 	"os"
 
@@ -23,9 +22,6 @@ func main() {
 	}
 }
 
-//Conn connection to libvirtd service
-var conn *libvirt.Connect
-
 func serverCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "serve",
@@ -41,17 +37,16 @@ func serverCmd() *cobra.Command {
 
 			e := echo.New()
 			e.GET("/domains", func(c echo.Context) error {
-				doms, err := listDomains()
+				doms, err := listDomains(conn)
 				if err != nil {
 					return err
 				}
 				return c.JSON(http.StatusOK, doms)
 			})
-			log.Println("Listening on " + addr)
 			e.Start(addr)
 		},
 	}
-	cmd.Flags().StringP("uri", "u", "", "Virtd URI")
+	cmd.Flags().StringP("uri", "u", "qemu:///system", "Virtd URI")
 	cmd.Flags().StringP("addr", "a", ":8080", "API listening address")
 	viper.BindPFlag("uri", cmd.Flags().Lookup("uri"))
 	viper.BindPFlag("addr", cmd.Flags().Lookup("addr"))

@@ -2,8 +2,9 @@ package main
 
 import libvirt "github.com/libvirt/libvirt-go"
 
-func listDomains() ([]domainSummaryInfo, error) {
-	doms, err := conn.ListAllDomains(libvirt.CONNECT_LIST_DOMAINS_ACTIVE | libvirt.CONNECT_LIST_DOMAINS_INACTIVE)
+func listDomains(conn *libvirt.Connect) ([]domainSummaryInfo, error) {
+	filters := libvirt.CONNECT_LIST_DOMAINS_ACTIVE | libvirt.CONNECT_LIST_DOMAINS_INACTIVE
+	doms, err := conn.ListAllDomains(filters)
 	if err != nil {
 		return nil, err
 	}
@@ -12,14 +13,16 @@ func listDomains() ([]domainSummaryInfo, error) {
 		name, _ := dom.GetName()
 		status, _, _ := dom.GetState()
 		dInfos = append(dInfos, domainSummaryInfo{
-			name:   name,
-			status: status,
+			name:       name,
+			statusCode: status,
+			status:     decodeDomainState(status),
 		})
 	}
 	return dInfos, nil
 }
 
 type domainSummaryInfo struct {
-	name   string
-	status libvirt.DomainState
+	name       string
+	statusCode libvirt.DomainState
+	status     string
 }
