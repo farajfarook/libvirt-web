@@ -2,27 +2,27 @@ package main
 
 import libvirt "github.com/libvirt/libvirt-go"
 
-func listDomains(conn *libvirt.Connect) ([]domainSummaryInfo, error) {
+// ListDomains List all domains
+func (conn *Connection) ListDomains() ([]DomainSummaryInfo, error) {
 	filters := libvirt.CONNECT_LIST_DOMAINS_ACTIVE | libvirt.CONNECT_LIST_DOMAINS_INACTIVE
-	doms, err := conn.ListAllDomains(filters)
+	doms, err := conn.virt.ListAllDomains(filters)
 	if err != nil {
 		return nil, err
 	}
-	dInfos := []domainSummaryInfo{}
+	var dInfos []DomainSummaryInfo
 	for _, dom := range doms {
-		name, _ := dom.GetName()
-		status, _, _ := dom.GetState()
-		dInfos = append(dInfos, domainSummaryInfo{
-			name:       name,
-			statusCode: status,
-			status:     decodeDomainState(status),
-		})
+		dInfo := DomainSummaryInfo{}
+		dInfo.Name, _ = dom.GetName()
+		dInfo.StatusCode, _, _ = dom.GetState()
+		dInfo.Status = decodeDomainState(dInfo.StatusCode)
+		dInfos = append(dInfos, dInfo)
 	}
 	return dInfos, nil
 }
 
-type domainSummaryInfo struct {
-	name       string
-	statusCode libvirt.DomainState
-	status     string
+// DomainSummaryInfo domain summary info model
+type DomainSummaryInfo struct {
+	Name       string              `json:"name"`
+	StatusCode libvirt.DomainState `json:"statusCode"`
+	Status     string              `json:"status"`
 }
