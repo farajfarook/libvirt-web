@@ -49,6 +49,13 @@ func serverCmd() *cobra.Command {
 				}
 				return c.JSON(http.StatusOK, dom)
 			})
+			e.GET("/domains/:name/_xml", func(c echo.Context) error {
+				content, err := conn.GetDomainXML(c.Param("name"))
+				if err != nil {
+					return err
+				}
+				return c.XMLBlob(http.StatusOK, []byte(content))
+			})
 			e.Start(addr)
 		},
 	}
