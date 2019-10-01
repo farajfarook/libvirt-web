@@ -2,10 +2,10 @@ package main
 
 import (
 	"fmt"
-	"net/http"
 	"os"
 
 	"github.com/enbiso/libvirt-web/domain"
+	"github.com/enbiso/libvirt-web/network"
 	"github.com/labstack/echo"
 	libvirt "github.com/libvirt/libvirt-go"
 
@@ -35,30 +35,9 @@ func serverCmd() *cobra.Command {
 			if err != nil {
 				panic(err)
 			}
-			domain.Init(conn)
-
 			e := echo.New()
-			e.GET("/domains", func(c echo.Context) error {
-				doms, err := domain.List()
-				if err != nil {
-					return err
-				}
-				return c.JSON(http.StatusOK, doms)
-			})
-			e.GET("/domains/:name", func(c echo.Context) error {
-				dom, err := domain.Get(c.Param("name"))
-				if err != nil {
-					return err
-				}
-				return c.JSON(http.StatusOK, dom)
-			})
-			e.GET("/domains/:name/_xml", func(c echo.Context) error {
-				content, err := domain.GetXML(c.Param("name"))
-				if err != nil {
-					return err
-				}
-				return c.XMLBlob(http.StatusOK, []byte(content))
-			})
+			domain.Init(conn, e)
+			network.Init(conn, e)
 			e.Start(addr)
 		},
 	}

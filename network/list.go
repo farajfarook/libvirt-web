@@ -1,11 +1,7 @@
-package domain
+package network
 
-import libvirt "github.com/libvirt/libvirt-go"
-
-// List List all domains
-func List() ([]SummaryInfo, error) {
-	filters := libvirt.CONNECT_LIST_NETWORKS_INACTIVE | libvirt.CONNECT_LIST_NETWORKS_ACTIVE
-	nets, err := conn.ListAllNetworks(filters)
+func list() ([]SummaryInfo, error) {
+	nets, err := findAll()
 	if err != nil {
 		return nil, err
 	}
