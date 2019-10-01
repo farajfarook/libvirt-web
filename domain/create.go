@@ -13,7 +13,7 @@ import (
 // @Router /domains [post]
 func create(request CreateRequest) (CreateResponse, error) {
 	domcfg := &libvirtxml.Domain{
-		Type: "kvm",
+		Type: request.Type,
 		Name: request.Name,
 		Memory: &libvirtxml.DomainMemory{
 			Value:    request.Memory,
@@ -50,6 +50,7 @@ func create(request CreateRequest) (CreateResponse, error) {
 //CreateRequest dogoc
 type CreateRequest struct {
 	Name    string `json:"name"`
+	Type    string `json:"type"`
 	Memory  uint   `json:"memory"`
 	VCPU    int    `json:"vcpu"`
 	Arch    string `json:"arch"`
