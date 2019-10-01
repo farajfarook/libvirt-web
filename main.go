@@ -5,7 +5,9 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/enbiso/libvirt-web/domain"
 	"github.com/labstack/echo"
+	libvirt "github.com/libvirt/libvirt-go"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -29,28 +31,29 @@ func serverCmd() *cobra.Command {
 			addr := cmd.Flags().Lookup("addr").Value.String()
 			uri := cmd.Flags().Lookup("uri").Value.String()
 
-			conn, err := newConnection(uri)
+			conn, err := libvirt.NewConnect(uri)
 			if err != nil {
 				panic(err)
 			}
+			domain.Init(conn)
 
 			e := echo.New()
 			e.GET("/domains", func(c echo.Context) error {
-				doms, err := conn.ListDomains()
+				doms, err := domain.List()
 				if err != nil {
 					return err
 				}
 				return c.JSON(http.StatusOK, doms)
 			})
 			e.GET("/domains/:name", func(c echo.Context) error {
-				dom, err := conn.GetDomain(c.Param("name"))
+				dom, err := domain.Get(c.Param("name"))
 				if err != nil {
 					return err
 				}
 				return c.JSON(http.StatusOK, dom)
 			})
 			e.GET("/domains/:name/_xml", func(c echo.Context) error {
-				content, err := conn.GetDomainXML(c.Param("name"))
+				content, err := domain.GetXML(c.Param("name"))
 				if err != nil {
 					return err
 				}

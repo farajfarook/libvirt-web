@@ -1,6 +1,13 @@
-package main
+package domain
 
 import libvirt "github.com/libvirt/libvirt-go"
+
+var conn *libvirt.Connect
+
+//Init domain
+func Init(connect *libvirt.Connect) {
+	conn = connect
+}
 
 func decodeDomainState(status libvirt.DomainState) string {
 	switch status {
