@@ -4,8 +4,7 @@ import libvirt "github.com/libvirt/libvirt-go"
 
 // List List all domains
 func List() ([]SummaryInfo, error) {
-	filters := libvirt.CONNECT_LIST_DOMAINS_ACTIVE | libvirt.CONNECT_LIST_DOMAINS_INACTIVE
-	doms, err := conn.ListAllDomains(filters)
+	doms, err := findAll()
 	if err != nil {
 		return nil, err
 	}
