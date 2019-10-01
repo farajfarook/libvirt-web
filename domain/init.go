@@ -13,11 +13,22 @@ var conn *libvirt.Connect
 func Init(connect *libvirt.Connect, e *echo.Echo) {
 	conn = connect
 	e.GET("/domains", func(c echo.Context) error {
-		doms, err := List()
+		doms, err := list()
 		if err != nil {
 			return err
 		}
 		return c.JSON(http.StatusOK, doms)
+	})
+	e.POST("/domains", func(c echo.Context) error {
+		req := CreateRequest{}
+		if err := c.Bind(&req); err != nil {
+			return echo.NewHTTPError(400, err.Error())
+		}
+		resp, err := create(req)
+		if err != nil {
+			return err
+		}
+		return c.JSON(http.StatusOK, resp)
 	})
 	e.GET("/domains/:name", func(c echo.Context) error {
 		dom, err := get(c.Param("name"))

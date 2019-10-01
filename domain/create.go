@@ -1,11 +1,15 @@
 package domain
 
-//Create create domain
-func Create(request CreateRequest) (*CreateResponse, error) {
-	return nil, nil
+// create godoc
+// @Tags domain
+// @Param request body domain.CreateRequest true "Create Request"
+// @Success 200 {object} domain.CreateResponse
+// @Router /domains [post]
+func create(request CreateRequest) (CreateResponse, error) {
+	return CreateResponse{Name: request.Name}, nil
 }
 
-//CreateRequest model
+//CreateRequest dogoc
 type CreateRequest struct {
 	Name    string `json:"name"`
 	Memory  int    `json:"memory"`
@@ -16,7 +20,7 @@ type CreateRequest struct {
 	Network string `json:"network"`
 }
 
-//CreateResponse model
+//CreateResponse godoc
 type CreateResponse struct {
-	SummaryInfo
+	Name string `json:"name"`
 }

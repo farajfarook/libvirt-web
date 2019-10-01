@@ -4,10 +4,12 @@ import (
 	"fmt"
 	"os"
 
+	_ "github.com/enbiso/libvirt-web/docs"
 	"github.com/enbiso/libvirt-web/domain"
 	"github.com/enbiso/libvirt-web/network"
 	"github.com/labstack/echo"
 	libvirt "github.com/libvirt/libvirt-go"
+	echoSwagger "github.com/swaggo/echo-swagger"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -23,10 +25,17 @@ func main() {
 	}
 }
 
+// @title Libvirt Web
+// @version 1.0
+// @description Libvirt virtualization web API
+
+// @contact.name Faraj Farook
+
+// @BasePath /
 func serverCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "serve",
-		Short: "Lib Virt Web Server",
+		Short: "Libvirt Web Server",
 		Run: func(cmd *cobra.Command, args []string) {
 			addr := cmd.Flags().Lookup("addr").Value.String()
 			uri := cmd.Flags().Lookup("uri").Value.String()
@@ -36,6 +45,7 @@ func serverCmd() *cobra.Command {
 				panic(err)
 			}
 			e := echo.New()
+			e.GET("/swagger/*", echoSwagger.WrapHandler)
 			domain.Init(conn, e)
 			network.Init(conn, e)
 			e.Start(addr)

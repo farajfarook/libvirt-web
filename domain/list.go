@@ -2,8 +2,11 @@ package domain
 
 import libvirt "github.com/libvirt/libvirt-go"
 
-// List List all domains
-func List() ([]SummaryInfo, error) {
+// list godoc
+// @Tags domain
+// @Success 200 {object} domain.SummaryInfo
+// @Router /domains [get]
+func list() ([]SummaryInfo, error) {
 	doms, err := findAll()
 	if err != nil {
 		return nil, err
@@ -19,7 +22,7 @@ func List() ([]SummaryInfo, error) {
 	return dInfos, nil
 }
 
-// SummaryInfo domain summary info model
+// SummaryInfo godoc
 type SummaryInfo struct {
 	Name       string              `json:"name"`
 	StatusCode libvirt.DomainState `json:"statusCode"`
